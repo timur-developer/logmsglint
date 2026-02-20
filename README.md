@@ -15,6 +15,15 @@ Custom golangci-lint linter (module plugin) that checks slog and go.uber.zap log
  - git
  - golangci-lint v2 (tested with v2.10.1)
 
+## Installation
+Clone repository:
+```bash
+git clone https://github.com/timur-developer/logmsglint.git
+cd logmsglint
+```
+(Optional) Download dependencies:
+`go mod download`
+
 ## Build
 
 Build standalone analyzer binary:
@@ -140,6 +149,7 @@ to:
 
 ## CI
 GitHub Actions runs unit tests and verifies plugin build + lint on each push/PR
+
 
 
 
