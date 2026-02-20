@@ -1,0 +1,13 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - logmsglint
+
+  settings:
+    custom:
+      logmsglint:
+        type: module
+        description: Checks slog/go.uber.zap log messages to basic style and safety rules.
+        settings: {}

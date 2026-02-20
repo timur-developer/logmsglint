@@ -1,0 +1,6 @@
+version: v2.10.1
+
+plugins:
+  - module: github.com/timur-developer/logmsglint
+    import: github.com/timur-developer/logmsglint/plugin
+    path: .
