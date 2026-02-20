@@ -15,6 +15,18 @@ Custom golangci-lint linter (module plugin) that checks slog and go.uber.zap log
  - git
  - golangci-lint v2 (tested with v2.10.1)
 
+## Build
+
+Build standalone analyzer binary:
+```bash
+go build -o logmsglint ./cmd/logmsglint
+```
+
+On Windows you can do:
+```bash
+go build -o logmsglint.exe ./cmd/logmsglint
+```
+
 ## Run as standalone analyzer
 Run on a package / project:
 
@@ -82,5 +94,38 @@ linters:
             - "secret_token"
           sensitive_regexps:             # custom regex patterns for sensitive data
             - "(?i)api[_-]?key\\s*="
-
 ```
+
+## Examples
+
+Example code:
+
+File: scratch/main.go
+
+```bash
+slog.Info("Starting server on port 8080")
+slog.Info("запуск сервера!")
+slog.Info("server started!🚀")
+slog.Info("token: " + "abc")
+```
+
+Expected output (standalone analyzer):
+
+`go run ./cmd/logmsglint ./scratch`
+
+```bash
+scratch/main.go:...: log message must start with a lowercase letter
+scratch/main.go:...: log message must contain only English letters; log message must not contain special characters or emoji
+scratch/main.go:...: log message must not contain special characters or emoji
+scratch/main.go:...: log message must not contain special characters or emoji; log message may contain sensitive data
+```
+
+Autofix example:
+
+`./custom-gcl run -c .golangci.yml --fix ./...`
+
+It will rewrite:
+`"Starting server on port 8080"`
+to:
+`"starting server on port 8080"`
+
