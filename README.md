@@ -50,6 +50,11 @@ Example (any package with Go files, e.g. `./scratch`):
 ./custom-gcl run -c .golangci.yml ./scratch
 ```
 
+Apply autofixes (lowercase)
+```bash
+./custom-gcl run -c .golangci.yml --fix ./...
+```
+
 ## Configuration
 The plugin is configured via `.golangci.yml` under:
 

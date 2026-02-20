@@ -36,4 +36,8 @@ func zapLowercase() {
 	l.Info("Failed to connect") // want "log message must start with a lowercase letter"
 }
 
+func slogMultipleIssues() {
+	slog.Info("Тест!") // want "log message must contain only English letters; log message must not contain special characters or emoji"
+}
+
 func token() string { return "x" }

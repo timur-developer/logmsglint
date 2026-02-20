@@ -11,7 +11,7 @@ linters:
         type: module
         description: Checks slog/go.uber.zap log messages to basic style and safety rules.
         settings:
-          enable_fixes: true             # autofix for lowercase
+          enable_fixes: true             # enable fixes (for example for lowercase)
           allowed_punct: ""              # special symbols is forbidden
           sensitive_keywords:            # you can add your own keywords here
             - "secret_token"

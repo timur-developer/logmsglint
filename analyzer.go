@@ -6,6 +6,7 @@ import (
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
+	"strings"
 )
 
 var Analyzer = &analysis.Analyzer{
@@ -70,24 +71,32 @@ func run(pass *analysis.Pass) (any, error) {
 			return
 		}
 
+		msgs := make([]string, 0, len(issues))
+		suggested := ""
+
 		for _, iss := range issues {
-			diag := analysis.Diagnostic{
-				Pos:     info.msgExpr.Pos(),
-				End:     info.msgExpr.End(),
-				Message: iss.message,
+			msgs = append(msgs, iss.message)
+			if suggested == "" && iss.suggested != "" {
+				suggested = iss.suggested
 			}
-
-			if iss.suggested != "" && extracted.literal != nil {
-				if edit, ok := suggestedFixForStringLiteral(extracted.literal, iss.suggested); ok {
-					diag.SuggestedFixes = []analysis.SuggestedFix{{
-						Message:   "apply fix",
-						TextEdits: []analysis.TextEdit{edit},
-					}}
-				}
-			}
-
-			pass.Report(diag)
 		}
+
+		diag := analysis.Diagnostic{
+			Pos:     info.msgExpr.Pos(),
+			End:     info.msgExpr.End(),
+			Message: strings.Join(msgs, "; "),
+		}
+
+		if currentConfig.EnableFixes && suggested != "" && extracted.literal != nil {
+			if edit, ok := suggestedFixForStringLiteral(extracted.literal, suggested); ok {
+				diag.SuggestedFixes = []analysis.SuggestedFix{{
+					Message:   "apply fix",
+					TextEdits: []analysis.TextEdit{edit},
+				}}
+			}
+		}
+
+		pass.Report(diag)
 	})
 
 	return nil, nil
