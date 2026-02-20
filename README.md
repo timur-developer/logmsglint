@@ -56,7 +56,7 @@ This produces custom-gcl (custom-gcl.exe on Windows) in the project root by defa
 ./custom-gcl run -c .golangci.yml ./...
 ```
 
-Example (any package with Go files, e.g. `./scratch`):
+Example (any package with Go files, e.g. `./scratch`, see [Examples](#examples)):
 
 ```bash
 ./custom-gcl run -c .golangci.yml ./scratch
@@ -102,11 +102,17 @@ Example code:
 
 File: scratch/main.go
 
-```bash
-slog.Info("Starting server on port 8080")
-slog.Info("запуск сервера!")
-slog.Info("server started!🚀")
-slog.Info("token: " + "abc")
+```go
+package scratch
+
+import "log/slog"
+
+func main() {
+	slog.Info("Starting server on port 8080")
+	slog.Info("запуск сервера!")
+	slog.Info("server started!🚀")
+	slog.Info("token: " + "abc")
+}
 ```
 
 Expected output (standalone analyzer):
@@ -131,4 +137,5 @@ to:
 
 ## CI
 GitHub Actions runs unit tests and verifies plugin build + lint on each push/PR
+
 
