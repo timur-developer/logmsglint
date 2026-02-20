@@ -1,6 +1,6 @@
 module github.com/timur-developer/logmsglint
 
-go 1.25.3
+go 1.24.0
 
 require (
 	github.com/golangci/plugin-module-register v0.1.2

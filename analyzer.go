@@ -10,7 +10,7 @@ import (
 
 var Analyzer = &analysis.Analyzer{
 	Name:     "logmsglint",
-	Doc:      "checks slog/zap log messages to basic style and safety rules",
+	Doc:      "checks slog/go.uber.zap log messages to basic style and safety rules",
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 	Run:      run,
 }
@@ -33,7 +33,7 @@ var slogMsgIndex = map[string]int{
 	"ErrorContext": 1,
 }
 
-// take only log functions from zap
+// take only log functions from go.uber.zap
 var zapMsgIndex = map[string]int{
 	"Debug":  0,
 	"Info":   0,
@@ -98,13 +98,7 @@ func matchLoggerCall(pass *analysis.Pass, call *ast.CallExpr) callInfo {
 	case *ast.SelectorExpr:
 		name := fun.Sel.Name
 
-		if sel := pass.TypesInfo.Selections[fun]; sel != nil {
-			obj := sel.Obj()
-			if obj == nil || obj.Pkg() == nil {
-				return callInfo{}
-			}
-
-			pkgPath := obj.Pkg().Path()
+		if pkgPath := receiverPkgPath(pass, fun.X); pkgPath != "" {
 			switch pkgPath {
 			case "log/slog":
 				idx, ok := slogMsgIndex[name]
@@ -120,8 +114,6 @@ func matchLoggerCall(pass *analysis.Pass, call *ast.CallExpr) callInfo {
 				}
 				return callInfo{ok: true, msgExpr: call.Args[idx]}
 			}
-
-			return callInfo{}
 		}
 
 		if obj := pass.TypesInfo.Uses[fun.Sel]; obj != nil && obj.Pkg() != nil && obj.Pkg().Path() == "log/slog" {
@@ -133,7 +125,6 @@ func matchLoggerCall(pass *analysis.Pass, call *ast.CallExpr) callInfo {
 		}
 
 		return callInfo{}
-
 	case *ast.Ident:
 		obj := pass.TypesInfo.Uses[fun]
 		if obj == nil || obj.Pkg() == nil || obj.Pkg().Path() != "log/slog" {
@@ -148,6 +139,28 @@ func matchLoggerCall(pass *analysis.Pass, call *ast.CallExpr) callInfo {
 	}
 
 	return callInfo{}
+}
+
+func receiverPkgPath(pass *analysis.Pass, x ast.Expr) string {
+	t := pass.TypesInfo.TypeOf(x)
+	if t == nil {
+		return ""
+	}
+
+	for {
+		p, ok := t.(*types.Pointer)
+		if !ok {
+			break
+		}
+		t = p.Elem()
+	}
+
+	n, ok := t.(*types.Named)
+	if !ok || n.Obj() == nil || n.Obj().Pkg() == nil {
+		return ""
+	}
+
+	return n.Obj().Pkg().Path()
 }
 
 func isString(pass *analysis.Pass, e ast.Expr) bool {
