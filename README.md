@@ -50,7 +50,7 @@ Example (any package with Go files, e.g. `./scratch`):
 ./custom-gcl run -c .golangci.yml ./scratch
 ```
 
-Apply autofixes (lowercase)
+To apply autofixes use `--fix` flag (will replace uppercase to lowercase)
 ```bash
 ./custom-gcl run -c .golangci.yml --fix ./...
 ```
@@ -82,4 +82,5 @@ linters:
             - "secret_token"
           sensitive_regexps:             # custom regex patterns for sensitive data
             - "(?i)api[_-]?key\\s*="
+
 ```
