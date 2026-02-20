@@ -22,7 +22,7 @@ Run on a package / project:
 go run ./cmd/logmsglint ./...
 ```
 
-Example:
+Example (any package with Go files, e.g. `./scratch`):
 ```bash
 go run ./cmd/logmsglint ./scratch
 ```
@@ -44,7 +44,7 @@ This produces custom-gcl (custom-gcl.exe on Windows) in the project root by defa
 ./custom-gcl run -c .golangci.yml ./...
 ```
 
-Example:
+Example (any package with Go files, e.g. `./scratch`):
 
 ```bash
 ./custom-gcl run -c .golangci.yml ./scratch
@@ -75,6 +75,6 @@ linters:
           allowed_punct: ""              # allowed punctuation characters in log messages
           sensitive_keywords:            # extra keywords treated as sensitive
             - "secret_token"
-          sensitive_regexps:           # custom regex patterns for sensitive data
+          sensitive_regexps:             # custom regex patterns for sensitive data
             - "(?i)api[_-]?key\\s*="
 ```
