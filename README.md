@@ -98,6 +98,9 @@ linters:
 
 ## Examples
 
+**Note:** the scratch/ folder is not committed to the repository.
+If you want to run the same demo commands (`go run ./cmd/logmsglint ./scratch` or `./custom-gcl run -c .golangci.yml ./scratch`), create a local `scratch/main.go` file using the code below.
+
 Example code:
 
 File: scratch/main.go
@@ -137,5 +140,6 @@ to:
 
 ## CI
 GitHub Actions runs unit tests and verifies plugin build + lint on each push/PR
+
 
 
