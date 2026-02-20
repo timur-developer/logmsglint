@@ -129,3 +129,6 @@ It will rewrite:
 to:
 `"starting server on port 8080"`
 
+## CI
+GitHub Actions runs unit tests and verifies plugin build + lint on each push/PR
+
