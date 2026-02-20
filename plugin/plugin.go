@@ -13,6 +13,11 @@ func init() {
 }
 
 func New(settings any) (register.LinterPlugin, error) {
+	cfg, err := logmsglint.LoadConfig(settings) // добавим экспорт
+	if err != nil {
+		return nil, err
+	}
+	logmsglint.SetConfig(cfg)
 	return &plugin{}, nil
 }
 

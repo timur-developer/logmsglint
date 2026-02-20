@@ -10,4 +10,10 @@ linters:
       logmsglint:
         type: module
         description: Checks slog/go.uber.zap log messages to basic style and safety rules.
-        settings: {}
+        settings:
+          enable_fixes: true             # autofix for lowercase
+          allowed_punct: ""              # special symbols is forbidden
+          sensitive_keywords:            # you can add your own keywords here
+            - "secret_token"
+          sensitive_regexps:           # you can add your own regex-patterns here
+            - "(?i)api[_-]?key\\s*="

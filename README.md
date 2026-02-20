@@ -51,9 +51,9 @@ Example:
 ```
 
 ## Configuration
-The plugin is configured via .golangci.yml under:
+The plugin is configured via `.golangci.yml` under:
 
-linters.settings.custom.logmsglint.settings.
+`linters.settings.custom.logmsglint.settings`.
 
 Minimal configuration example:
 
@@ -70,5 +70,11 @@ linters:
       logmsglint:
         type: module
         description: Checks slog/go.uber.zap log messages to basic style and safety rules.
-        settings: {}
+        settings:
+          enable_fixes: true             # enable SuggestedFix for lowercase rule
+          allowed_punct: ""              # allowed punctuation characters in log messages
+          sensitive_keywords:            # extra keywords treated as sensitive
+            - "secret_token"
+          sensitive_regexps:           # custom regex patterns for sensitive data
+            - "(?i)api[_-]?key\\s*="
 ```
