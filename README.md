@@ -1,87 +1,118 @@
 # logmsglint
-Custom golangci-lint linter (module plugin) that checks slog and go.uber.zap log messages to basic style and safety rules.
 
-## Rules
- - Log messages must start with a lowercase letter.
+`logmsglint` - кастомный линтер для Go, который проверяет сообщения логов в `log/slog` и `go.uber.org/zap`.
 
- - Log messages must be English-only (letters).
+Линтер помогает поддерживать единый стиль лог-сообщений и снижает риск случайного попадания чувствительных данных в логи. Его можно запускать как standalone-анализатор или подключать к `golangci-lint` v2 через Module Plugin System.
 
- - Log messages must not contain special characters / emoji.
+## Что проверяет
 
- - Log messages must not contain potentially sensitive data (keyword-based).
+- сообщение лога должно начинаться со строчной буквы;
+- сообщение должно быть на английском языке;
+- сообщение не должно содержать специальные символы или emoji;
+- сообщение не должно содержать потенциально чувствительные данные по ключевым словам и регулярным выражениям.
 
-## Requirements
- - Go 1.22+
- - git
- - golangci-lint v2 (tested with v2.10.1)
+Для правила про строчную букву поддерживается autofix: линтер может автоматически заменить первую заглавную букву на строчную.
 
-## Installation
-Clone repository:
+## Требования
+
+- Go 1.22+
+- git
+- golangci-lint v2, проверялось на `v2.10.1`
+
+## Установка
+
+Склонируйте репозиторий:
+
 ```bash
 git clone https://github.com/timur-developer/logmsglint.git
 cd logmsglint
 ```
-(Optional) Download dependencies:
-`go mod download`
 
-## Build
+При необходимости скачайте зависимости:
 
-Build standalone analyzer binary:
+```bash
+go mod download
+```
+
+## Сборка
+
+Сборка standalone-анализатора:
+
 ```bash
 go build -o logmsglint ./cmd/logmsglint
 ```
 
-On Windows you can do:
+На Windows:
+
 ```bash
 go build -o logmsglint.exe ./cmd/logmsglint
 ```
 
-## Run as standalone analyzer
-Run on a package / project:
+## Запуск как standalone-анализатор
+
+Проверить текущий проект:
 
 ```bash
 go run ./cmd/logmsglint ./...
 ```
 
-Example (any package with Go files, e.g. `./scratch`):
+Проверить отдельный пакет:
+
 ```bash
 go run ./cmd/logmsglint ./scratch
 ```
 
-## Run with golangci-lint (module plugin)
-This repository uses the Module Plugin System.
+## Запуск через golangci-lint
 
-1. Build a custom golangci-lint binary with the plugin (uses .custom-gcl.yml):
+Проект использует Module Plugin System для подключения линтера к `golangci-lint`.
+
+Сначала соберите кастомный бинарник `golangci-lint` с плагином:
 
 ```bash
 golangci-lint custom -v
 ```
 
-This produces custom-gcl (custom-gcl.exe on Windows) in the project root by default.
+Команда использует конфигурацию из `.custom-gcl.yml` и создает бинарник `custom-gcl` в корне проекта. На Windows будет создан `custom-gcl.exe`.
 
-2. Run the custom binary with this repository config:
+Запустите проверку через собранный бинарник:
 
 ```bash
 ./custom-gcl run -c .golangci.yml ./...
 ```
 
-Example (any package with Go files, e.g. `./scratch`, see [Examples](#examples)):
+Проверить отдельный пакет:
 
 ```bash
 ./custom-gcl run -c .golangci.yml ./scratch
 ```
 
-To apply autofixes use `--fix` flag (will replace uppercase to lowercase)
+Запуск с autofix:
+
 ```bash
 ./custom-gcl run -c .golangci.yml --fix ./...
 ```
 
-## Configuration
-The plugin is configured via `.golangci.yml` under:
+Autofix применяется к правилу про первую букву сообщения. Например:
 
-`linters.settings.custom.logmsglint.settings`.
+```go
+slog.Info("Starting server")
+```
 
-Minimal configuration example:
+будет заменено на:
+
+```go
+slog.Info("starting server")
+```
+
+## Конфигурация
+
+Линтер настраивается в `.golangci.yml` в секции:
+
+```text
+linters.settings.custom.logmsglint.settings
+```
+
+Минимальный пример конфигурации:
 
 ```yaml
 version: "2"
@@ -95,24 +126,28 @@ linters:
     custom:
       logmsglint:
         type: module
-        description: Checks slog/go.uber.zap log messages to basic style and safety rules.
+        description: Checks slog/go.uber.org/zap log messages to basic style and safety rules.
         settings:
-          enable_fixes: true             # enable SuggestedFix for lowercase rule
-          allowed_punct: ""              # allowed punctuation characters in log messages
-          sensitive_keywords:            # extra keywords treated as sensitive
+          enable_fixes: true
+          allowed_punct: ""
+          sensitive_keywords:
             - "secret_token"
-          sensitive_regexps:             # custom regex patterns for sensitive data
+          sensitive_regexps:
             - "(?i)api[_-]?key\\s*="
 ```
 
-## Examples
+Параметры:
 
-**Note:** the scratch/ folder is not committed to the repository.
-If you want to run the same demo commands (`go run ./cmd/logmsglint ./scratch` or `./custom-gcl run -c .golangci.yml ./scratch`), create a local `scratch/main.go` file using the code below.
+- `enable_fixes` - включает `SuggestedFix` для правила про строчную букву;
+- `allowed_punct` - список разрешенных знаков пунктуации в сообщениях;
+- `sensitive_keywords` - дополнительные ключевые слова, которые считаются чувствительными;
+- `sensitive_regexps` - пользовательские регулярные выражения для поиска чувствительных данных.
 
-Example code:
+## Примеры
 
-File: scratch/main.go
+Папка `scratch/` не хранится в репозитории. Чтобы повторить демо-команды, создайте локальный файл `scratch/main.go`.
+
+Пример файла:
 
 ```go
 package scratch
@@ -127,29 +162,43 @@ func main() {
 }
 ```
 
-Expected output (standalone analyzer):
-
-`go run ./cmd/logmsglint ./scratch`
+Запуск standalone-анализатора:
 
 ```bash
+go run ./cmd/logmsglint ./scratch
+```
+
+Ожидаемый результат:
+
+```text
 scratch/main.go:...: log message must start with a lowercase letter
 scratch/main.go:...: log message must contain only English letters; log message must not contain special characters or emoji
 scratch/main.go:...: log message must not contain special characters or emoji
 scratch/main.go:...: log message must not contain special characters or emoji; log message may contain sensitive data
 ```
 
-Autofix example:
+Пример запуска autofix:
 
-`./custom-gcl run -c .golangci.yml --fix ./...`
+```bash
+./custom-gcl run -c .golangci.yml --fix ./...
+```
 
-It will rewrite:
-`"Starting server on port 8080"`
-to:
-`"starting server on port 8080"`
+Он заменит:
+
+```go
+slog.Info("Starting server on port 8080")
+```
+
+на:
+
+```go
+slog.Info("starting server on port 8080")
+```
 
 ## CI
-GitHub Actions runs unit tests and verifies plugin build + lint on each push/PR
 
+В GitHub Actions запускаются unit-тесты, сборка плагина и проверка линтера на каждый push и pull request.
 
+## Для чего полезен
 
-
+`logmsglint` полезен в проектах, где важно держать логи в едином формате и заранее отсекать потенциально опасные сообщения. Он особенно хорошо подходит для командных Go-проектов с общим стандартом логирования через `slog` или `zap`.
