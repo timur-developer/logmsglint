@@ -2,10 +2,12 @@
 
 ![logmsglint-logo](https://raw.githubusercontent.com/timur-developer/logmsglint/refs/heads/main/logmsglint-logo.png)
 
-[](https://github.com/timur-developer/logmsglint/actions/workflows/ci.yml)
+[![CI](https://github.com/timur-developer/logmsglint/actions/workflows/ci.yml/badge.svg)](https://github.com/timur-developer/logmsglint/actions/workflows/ci.yml)
 ![Go](https://img.shields.io/badge/go-1.22%2B-00ADD8?logo=go&logoColor=white)
 ![golangcilint](https://img.shields.io/badge/golangci--lint-v2-181717?logo=go)
 ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+
+Read this in other languages: [Russian](README.ru.md)
 
 `logmsglint` is a Go static analyzer for validating log messages in `log/slog` and `go.uber.org/zap` calls.
 
